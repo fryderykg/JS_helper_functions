@@ -27,8 +27,8 @@ function optimizeScrollAndResize(func, eventType, delay) {
   * Check params
   */
   function checkParams(){
-    if (eventType !== "scroll" && eventType !== "resize") {
-      console.log("You need to pass 'scroll' or 'resize' event to function.");
+    if (eventType !== "scroll" && eventType !== "resize" && eventType !== 'touchmove') {
+      console.log("You need to pass 'scroll' or 'resize' or 'touchmove' event to function.");
       return;
     }
     if (typeof delay !== "number") {
@@ -46,7 +46,7 @@ function optimizeScrollAndResize(func, eventType, delay) {
   * bind function to eventType
   */
   function bind() {
-    $(window).on(eventType, function() {
+    $(window).on(eventType, function(e) {
       if (waiting) {
         return
       }
@@ -57,17 +57,16 @@ function optimizeScrollAndResize(func, eventType, delay) {
       // run function bind to scroll every delay time,
       // function bind to resize run only on the end of resizing
       if (eventType === 'scroll') {
-        func();
+        func(e);
       }
 
       setTimeout(function() {
         waiting = false;
-      }, delay)
+      }, delay);
 
       // Add function execution on the end of scrolling or resizing
       endEventHandle = setTimeout(function() {
-        func()
-        console.log('end') // only for testing
+        func(e);
       }, delay + 100)
     })
   }
@@ -75,18 +74,3 @@ function optimizeScrollAndResize(func, eventType, delay) {
   // Start function
   init();
 }
-
-
-///////////////////////////////////////////////////////////////////////////
-////////////////////// only for testing purpose ///////////////////////////
-///////////////////////////////////////////////////////////////////////////
-
-function testScroll() {
-  console.log('test scroll');
-}
-function testResize() {
-  console.log('test resize');
-}
-
-optimizeScrollAndResize(testScroll, 'scroll', 500);
-optimizeScrollAndResize(testResize, 'resize', 100);
